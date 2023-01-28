@@ -3,19 +3,54 @@ import {Text, TouchableHighlight, TouchableOpacity, View} from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
 import RNPIckerSelect from 'react-native-picker-select'
 import LinearGradient from 'react-native-linear-gradient'
+import {useNavigation, useRoute} from '@react-navigation/native'
+import {getRoutes} from '../../data/routes'
+
+const defaultFontStyles = {
+  fontFamily: 'AirbnbCereal_W_Md',
+}
 
 /**
  *
  * @param {Object} props
  * @param {import('react-native').ViewStyle} props.style
+ * @param {''} props.title
+ * @param {boolean} props.defaultSpacing
  * @returns
  */
-export const Container = ({children, style}) => (
-  <View
-    style={{height: '100%', width: '100%', backgroundColor: 'white', ...style}}>
-    {children}
-  </View>
-)
+export const ScreenContainer = ({
+  children,
+  style,
+  title,
+  defaultSpacing = true,
+}) => {
+  const route = useRoute()
+  const getScreenTitle = getRoutes().find(x => x.name === route.name)?.title
+
+  return (
+    <View
+      style={{
+        height: '100%',
+        width: '100%',
+        padding: 15,
+        paddingLeft: 20,
+        paddingRight: 20,
+        backgroundColor: 'white',
+        ...style,
+      }}>
+      <Text
+        style={{
+          textAlign: 'center',
+          fontSize: 16,
+          fontWeight: '600',
+        }}>
+        {title || getScreenTitle}
+      </Text>
+      {defaultSpacing && <Spacer multiply={5} />}
+      {children}
+    </View>
+  )
+}
 
 /**
  *
@@ -86,6 +121,7 @@ export const Picker = ({
  * @param {Object} props
  * @param {import('react-native').ViewStyle} props.style
  * @param {''} props.label
+ * @param {() => {}} props.onPress
  * @returns
  */
 export const CTAButton = ({
@@ -111,16 +147,55 @@ export const CTAButton = ({
       {children ? (
         children
       ) : (
-        <Text
-          style={{
-            textAlign: 'center',
-            fontSize: 20,
-            color: 'white',
-            fontWeight: '500',
-          }}>
-          {label}
-        </Text>
+        <AppText.Lg style={{textAlign: 'center', color: '#fff'}}>
+          Continue
+        </AppText.Lg>
       )}
     </TouchableHighlight>
   </LinearGradient>
 )
+
+/**
+ * The default Text component to be used in this app
+ * @param {Object} props
+ * @param {import('react-native').TextStyle} props.style
+ * @returns
+ */
+export const AppText = {
+  /**
+   * The default Text component to be used in this app
+   * @param {Object} props
+   * @param {import('react-native').TextStyle} props.style
+   * @returns
+   */
+  Xs: ({style, children, isBold}) => (
+    <Text style={[defaultFontStyles, style, {fontSize: 12}]}>{children}</Text>
+  ),
+  /**
+   * The default Text component to be used in this app
+   * @param {Object} props
+   * @param {import('react-native').TextStyle} props.style
+   * @returns
+   */
+  Sm: ({style, children, isBold}) => (
+    <Text style={[defaultFontStyles, style, {fontSize: 14}]}>{children}</Text>
+  ),
+  /**
+   * The default Text component to be used in this app
+   * @param {Object} props
+   * @param {import('react-native').TextStyle} props.style
+   * @returns
+   */
+  Lg: ({style, children}) => (
+    <Text style={[defaultFontStyles, style, {fontSize: 20}]}>{children}</Text>
+  ),
+  /**
+   * The default Text component to be used in this app
+   * @param {Object} props
+   * @param {import('react-native').TextStyle} props.style
+   * @returns
+   */
+  Md: ({style, children}) => (
+    <Text style={[defaultFontStyles, style, {fontSize: 16}]}>{children}</Text>
+  ),
+}

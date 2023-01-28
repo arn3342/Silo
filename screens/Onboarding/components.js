@@ -3,17 +3,28 @@ import {TouchableOpacity, Text, View, Image} from 'react-native'
 import EmailIcon from '../../assets/images/email-icon.png'
 import AppleIcon from '../../assets/images/apple-icon.png'
 import GoogleIcon from '../../assets/images/google-icon.png'
+import Icon from 'react-native-vector-icons/Feather'
+import {AppText} from '../../global/components'
 
 const authIcons = {
   Email: EmailIcon,
   Apple: AppleIcon,
   Google: GoogleIcon,
+  Phone: (
+    <Icon
+      name='phone'
+      size={18}
+      style={{
+        position: 'absolute',
+        left: 10,
+      }}
+    />
+  ),
 }
-
 /**
  *
  * @param {Object} props
- * @param {'Google' | 'Apple' | 'Email'} props.type
+ * @param {'Google' | 'Apple' | 'Email' | 'Phone'} props.type
  * @param {() => {}} props.onPress
  * @returns
  */
@@ -26,25 +37,28 @@ export const AuthProvider = ({type, onPress}) => (
       borderColor: '#D0D5DD',
       justifyContent: 'center',
       marginBottom: 12,
+      padding: 12,
     }}>
-    <Image
-      source={authIcons[type]}
+    {typeof authIcons[type] === 'number' ? (
+      <Image
+        source={authIcons[type]}
+        style={{
+          position: 'absolute',
+          left: 10,
+          height: 18,
+        }}
+        resizeMode='contain'
+      />
+    ) : (
+      authIcons[type]
+    )}
+    <AppText.Md
       style={{
-        position: 'absolute',
-        left: 10,
-        height: 18,
-      }}
-      resizeMode='contain'
-    />
-    <Text
-      style={{
-        fontSize: 16,
         textAlign: 'center',
         fontWeight: '600',
-        padding: 12,
       }}>
       Continue with {type}
-    </Text>
+    </AppText.Md>
   </TouchableOpacity>
 )
 
