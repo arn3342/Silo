@@ -56,6 +56,23 @@ export const useAuthHook = () => {
     }
   }
 
+  async function signInWithPhone (phoneNumber) {
+    setIsBusy(true)
+    try {
+      const authResult = await auth().signInWithPhoneNumber(phoneNumber, true)
+      setIsBusy(false)
+      return {data: authResult, success: true}
+    } catch (ex) {
+      setIsBusy(false)
+      console.log('COuldnt sing in with phone:', ex)
+      const errorCode = ex.toString().match(/\[(.*?)\]/)[1]
+      return {
+        error: {
+          message: ParseFirebaseError[errorCode],
+        },
+      }
+    }
+  }
   async function signInWithEmailCreds ({email, password}) {
     setIsBusy(true)
     try {
@@ -171,6 +188,7 @@ export const useAuthHook = () => {
     signInWithLocal,
     signInWithCreds,
     signInWithGoogle,
+    signInWithPhone,
     signOut,
     isBusy,
   }

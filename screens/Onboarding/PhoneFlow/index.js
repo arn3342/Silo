@@ -26,6 +26,7 @@ import {
 
 export default () => {
   const navigation = useNavigation()
+  const {signInWithPhone, isBusy} = useAuthHook()
   const errorAnimValues = {
     translateX: useSharedValue(0),
     borderColor: useSharedValue('#A6A6A6'),
@@ -43,10 +44,11 @@ export default () => {
     value: `${x.name} (${x.dial_code})`,
   }))
 
-  function gotoVerify () {
+  function gotoVerify (phoneNumber, callback) {
     navigation.navigate(AuthRoutes.AuthVerify.name, {
       authMethod: 'phone',
-      data: `${pickerValue.match(/\(([^)]+)\)/)[1]}${phoneNumber}`,
+      data: phoneNumber,
+      verificationCallback: callback,
     })
   }
 
@@ -70,6 +72,15 @@ export default () => {
       withTiming(-10, {duration: 100}),
       withTiming(0, {duration: 100}),
     )
+  }
+
+  async function performAuth (values) {
+    const phoneNumber = `${values.code.match(/\(([^)]+)\)/)[1]}${values.number}`
+    const result = await signInWithPhone(phoneNumber)
+
+    if (result.success) {
+      gotoVerify(phoneNumber, result.data)
+    }
   }
 
   return (
@@ -158,7 +169,11 @@ export default () => {
               data rates apply.
             </AppText.Xs>
             <Spacer multiply={4} />
-            <CTAButton label='Continue' onPress={handleSubmit} />
+            <CTAButton
+              label='Continue'
+              onPress={handleSubmit}
+              isLoading={isBusy}
+            />
           </>
         )}
       </Formik>

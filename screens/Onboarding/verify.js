@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react'
+import React, {useEffect, useState} from 'react'
 import {AppText, ScreenContainer, Spacer} from '../../global/components'
 import OTPInputView from '@twotalltotems/react-native-otp-input'
 import {
@@ -10,10 +10,37 @@ import {
 } from 'react-native'
 import {TouchableOpacity} from 'react-native-gesture-handler'
 import {useNavigation, useRoute} from '@react-navigation/native'
+import {AppRoutes} from '../../data/routes'
+import Animated, {
+  FadeIn,
+  FadeInRight,
+  FadeOut,
+  FadeOutLeft,
+  useSharedValue,
+  useAnimatedStyle,
+  withTiming,
+  withSequence,
+} from 'react-native-reanimated'
 
 export default () => {
+  const [isBusy, setIsButy] = useState(false)
+  const [otpCode, setOTPCode] = useState('')
   const navigation = useNavigation()
   const route = useRoute()
+
+  const errorAnimValues = {
+    translateX: useSharedValue(0),
+    borderColor: useSharedValue('#A6A6A6'),
+  }
+
+  const formAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [{translateX: errorAnimValues.translateX.value}],
+      borderColor: errorAnimValues.borderColor.value,
+    }
+  })
+
+  const {verificationCallback} = route.params
 
   useEffect(() => {
     navigation.addListener('beforeRemove', e => {
@@ -24,8 +51,41 @@ export default () => {
       }
     })
   }, [])
+
+  async function validateCode (code) {
+    try {
+      setIsButy(true)
+      await verificationCallback.confirm(code)
+      navigation.reset({
+        index: 0,
+        routes: [AppRoutes.default],
+      })
+    } catch (ex) {
+      setOTPCode('')
+      setIsButy(false)
+      triggerErrorShake()
+    }
+  }
+
+  function triggerErrorShake () {
+    errorAnimValues.borderColor.value = withSequence(
+      withTiming('#ff2b2b', {duration: 700}),
+      withTiming('#A6A6A6', {duration: 100}),
+    )
+
+    errorAnimValues.translateX.value = withSequence(
+      withTiming(10, {duration: 100}),
+      withTiming(-10, {duration: 100}),
+      withTiming(10, {duration: 100}),
+      withTiming(-10, {duration: 100}),
+      withTiming(10, {duration: 100}),
+      withTiming(-10, {duration: 100}),
+      withTiming(0, {duration: 100}),
+    )
+  }
+
   return (
-    <ScreenContainer>
+    <ScreenContainer isUIBusy={isBusy}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
         <AppText.Sm>
@@ -33,28 +93,28 @@ export default () => {
           {route.params?.authMethod === 'phone' && ' via SMS'}
         </AppText.Sm>
         <Spacer multiply={4} />
-        <View
-          style={{
-            maxHeight: 70,
-            padding: 15,
-            paddingTop: 5,
-            paddingBottom: 5,
-            borderRadius: 10,
-            borderWidth: 1,
-            borderColor: '#000',
-          }}>
+        <Animated.View
+          style={[
+            formAnimatedStyle,
+            {
+              maxHeight: 70,
+              padding: 15,
+              paddingTop: 5,
+              paddingBottom: 5,
+              borderRadius: 10,
+              borderWidth: 1,
+            },
+          ]}>
           <OTPInputView
-            pinCount={4}
-            // code={this.state.code} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
-            // onCodeChanged = {code => { this.setState({code})}}
+            pinCount={6}
+            code={otpCode} //You can supply this prop or not. The component will be used as a controlled / uncontrolled component respectively.
+            onCodeChanged={code => setOTPCode(code)}
             autoFocusOnLoad
             codeInputFieldStyle={styles.underlineStyleBase}
             codeInputHighlightStyle={styles.underlineStyleHighLighted}
-            onCodeFilled={code => {
-              console.log(`Code is ${code}, you are good to go!`)
-            }}
+            onCodeFilled={validateCode}
           />
-        </View>
+        </Animated.View>
         <Spacer multiply={4} />
         <TouchableOpacity
           style={{flexDirection: 'row', alignContent: 'center'}}>
