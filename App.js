@@ -1,24 +1,11 @@
 import React, {useEffect} from 'react'
 import RNBootSplash from 'react-native-bootsplash'
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import {
-  createStackNavigator,
-  CardStyleInterpolators,
-  HeaderStyleInterpolators,
-} from '@react-navigation/stack'
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  TextInput,
-  useColorScheme,
-  View,
-} from 'react-native'
+import {createStackNavigator} from '@react-navigation/stack'
+import {SafeAreaView} from 'react-native'
 import {AppRoutes, AuthRoutes} from './data/routes'
 import OnboardingScreens from './screens/Onboarding'
 import {NavigationContainer} from '@react-navigation/native'
+import MainApp from './screens/MainApp'
 
 const AuthNav = () => {
   const AuthStack = createStackNavigator()
@@ -26,7 +13,7 @@ const AuthNav = () => {
   return (
     <AuthStack.Navigator screenOptions={headerOptions}>
       <AuthStack.Screen
-        name={AuthRoutes.default.name}
+        name={AuthRoutes.init.name}
         component={OnboardingScreens.Init}
       />
       <AuthStack.Screen
@@ -42,6 +29,16 @@ const AuthNav = () => {
   )
 }
 
+const AppNav = () => {
+  const AppStack = createStackNavigator()
+
+  return (
+    <AppStack.Navigator screenOptions={headerOptions}>
+      <AppStack.Screen name={AppRoutes.Main.name} component={MainApp} />
+    </AppStack.Navigator>
+  )
+}
+
 const App = () => {
   useEffect(() => {
     RNBootSplash.hide({fade: true})
@@ -49,13 +46,22 @@ const App = () => {
 
   const ParentStack = createStackNavigator()
   return (
+    // <Provider store={store}>
     <SafeAreaView style={{height: '100%', width: '100%'}}>
       <NavigationContainer>
         <ParentStack.Navigator screenOptions={headerOptions}>
-          <ParentStack.Screen name={AppRoutes.default} component={AuthNav} />
+          <ParentStack.Screen
+            name={AuthRoutes.default.name}
+            component={AuthNav}
+          />
+          <ParentStack.Screen
+            name={AppRoutes.default.name}
+            component={AppNav}
+          />
         </ParentStack.Navigator>
       </NavigationContainer>
     </SafeAreaView>
+    // </Provider>
   )
 }
 export default App

@@ -1,5 +1,11 @@
 import React, {useRef} from 'react'
-import {Text, TouchableHighlight, TouchableOpacity, View} from 'react-native'
+import {
+  ActivityIndicator,
+  Text,
+  TouchableHighlight,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
 import RNPIckerSelect from 'react-native-picker-select'
 import LinearGradient from 'react-native-linear-gradient'
@@ -16,6 +22,7 @@ const defaultFontStyles = {
  * @param {import('react-native').ViewStyle} props.style
  * @param {''} props.title
  * @param {boolean} props.defaultSpacing
+ * @param {boolean} props.isUIBusy
  * @returns
  */
 export const ScreenContainer = ({
@@ -23,31 +30,45 @@ export const ScreenContainer = ({
   style,
   title,
   defaultSpacing = true,
+  isUIBusy,
 }) => {
   const route = useRoute()
   const getScreenTitle = getRoutes().find(x => x.name === route.name)?.title
-
   return (
     <View
       style={{
-        height: '100%',
-        width: '100%',
-        padding: 15,
-        paddingLeft: 20,
-        paddingRight: 20,
         backgroundColor: 'white',
-        ...style,
       }}>
-      <Text
+      {isUIBusy && (
+        <View
+          style={{
+            position: 'absolute',
+            height: '100%',
+            width: '100%',
+            backgroundColor: '#e3e1e1',
+          }}
+        />
+      )}
+      <View
         style={{
-          textAlign: 'center',
-          fontSize: 16,
-          fontWeight: '600',
+          height: '100%',
+          width: '100%',
+          padding: 15,
+          paddingLeft: 20,
+          paddingRight: 20,
+          ...style,
         }}>
-        {title || getScreenTitle}
-      </Text>
-      {defaultSpacing && <Spacer multiply={5} />}
-      {children}
+        <Text
+          style={{
+            textAlign: 'center',
+            fontSize: 16,
+            fontWeight: '600',
+          }}>
+          {title || getScreenTitle}
+        </Text>
+        {defaultSpacing && <Spacer multiply={5} />}
+        {children}
+      </View>
     </View>
   )
 }
@@ -121,39 +142,52 @@ export const Picker = ({
  * @param {Object} props
  * @param {import('react-native').ViewStyle} props.style
  * @param {''} props.label
+ * @param {boolean} props.isLoading
  * @param {() => {}} props.onPress
  * @returns
  */
 export const CTAButton = ({
   children,
   style,
-  label = 'Click Me',
+  label = 'Continue',
+  isLoading,
   onPress = () => {},
-}) => (
-  <LinearGradient
-    colors={['#A586DD', '#C6ADF3']}
-    start={{x: 0, y: 0}}
-    end={{x: 1, y: 0}}
-    style={{
-      borderRadius: 10,
-    }}>
-    <TouchableHighlight
-      underlayColor='#A586DD'
+}) => {
+  const buttonRef = useRef()
+  function performPress () {
+    if (!isLoading) {
+      onPress()
+    }
+  }
+  return (
+    <LinearGradient
+      colors={['#A586DD', '#C6ADF3']}
+      start={{x: 0, y: 0}}
+      end={{x: 1, y: 0}}
       style={{
-        padding: 15,
-        ...style,
-      }}
-      onPress={onPress}>
-      {children ? (
-        children
-      ) : (
-        <AppText.Lg style={{textAlign: 'center', color: '#fff'}}>
-          Continue
-        </AppText.Lg>
-      )}
-    </TouchableHighlight>
-  </LinearGradient>
-)
+        borderRadius: 10,
+      }}>
+      <TouchableHighlight
+        ref={buttonRef}
+        underlayColor='#A586DD'
+        style={{
+          height: 55,
+          justifyContent: 'center',
+          alignContent: 'center',
+          ...style,
+        }}
+        onPress={performPress}>
+        {isLoading ? (
+          <ActivityIndicator size='small' color={'#fff'} />
+        ) : (
+          <AppText.Lg style={{textAlign: 'center', color: '#fff'}}>
+            {label}
+          </AppText.Lg>
+        )}
+      </TouchableHighlight>
+    </LinearGradient>
+  )
+}
 
 /**
  * The default Text component to be used in this app

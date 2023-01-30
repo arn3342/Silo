@@ -8,7 +8,14 @@ export default () => {
   const navigation = useNavigation()
 
   useEffect(() => {
-    setTimeout(() => navigation.navigate(AuthRoutes.AuthFlow), 1500)
+    setTimeout(
+      () =>
+        navigation.reset({
+          index: 0,
+          routes: [AuthRoutes.AuthFlow],
+        }),
+      1500,
+    )
   }, [])
   return (
     <View
@@ -17,7 +24,7 @@ export default () => {
         width: '100%',
         justifyContent: 'center',
         alignContent: 'center',
-        backgroundColor: 'white',
+        backgroundColor: '#fbf9f9',
       }}>
       <Image
         style={{position: 'absolute', alignSelf: 'center', height: 100}}
