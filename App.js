@@ -1,14 +1,15 @@
 import React, {useEffect} from 'react'
 import RNBootSplash from 'react-native-bootsplash'
-import {createStackNavigator} from '@react-navigation/stack'
-import {SafeAreaView} from 'react-native'
-import {AppRoutes, AuthRoutes} from './data/routes'
+import {createNativeStackNavigator} from '@react-navigation/native-stack'
+import {Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native'
+import {AppRoutes, AuthRoutes, getDedicatedRoutes} from './data/routes'
 import OnboardingScreens from './screens/Onboarding'
 import {NavigationContainer} from '@react-navigation/native'
-import MainApp from './screens/MainApp'
-
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import Lottie from 'lottie-react-native'
+import {CustomTabBar} from './global/components'
 const AuthNav = () => {
-  const AuthStack = createStackNavigator()
+  const AuthStack = createNativeStackNavigator()
 
   return (
     <AuthStack.Navigator screenOptions={headerOptions}>
@@ -29,12 +30,34 @@ const AuthNav = () => {
   )
 }
 
-const AppNav = () => {
-  const AppStack = createStackNavigator()
+const SwapNav = () => {
+  const SwapStack = createNativeStackNavigator()
 
   return (
-    <AppStack.Navigator screenOptions={headerOptions}>
-      <AppStack.Screen name={AppRoutes.Main.name} component={MainApp} />
+    <SwapStack.Navigator
+      screenOptions={headerOptions}
+      initialRouteName={AppRoutes.Transfer.name}>
+      <SwapStack.Group>
+        <SwapStack.Screen {...AppRoutes.Transfer} />
+        <SwapStack.Screen {...AppRoutes.TransferAmount} />
+      </SwapStack.Group>
+      <SwapStack.Group screenOptions={{presentation: 'modal'}}>
+        <SwapStack.Screen {...AppRoutes.TransferConfirm} />
+      </SwapStack.Group>
+    </SwapStack.Navigator>
+  )
+}
+
+const AppNav = () => {
+  const AppStack = createBottomTabNavigator()
+  const app_routes = getDedicatedRoutes().AppRoutes
+  return (
+    <AppStack.Navigator
+      screenOptions={headerOptions}
+      tabBar={props => <CustomTabBar {...props} specialTabIndex={1} />}>
+      <AppStack.Screen {...AppRoutes.Wallet} />
+      <AppStack.Screen {...AppRoutes.TransferInit} component={SwapNav} />
+      <AppStack.Screen {...AppRoutes.Accounts} />
     </AppStack.Navigator>
   )
 }
@@ -44,7 +67,8 @@ const App = () => {
     RNBootSplash.hide({fade: true})
   }, [])
 
-  const ParentStack = createStackNavigator()
+  const ParentStack = createNativeStackNavigator()
+
   return (
     // <Provider store={store}>
     <SafeAreaView style={{height: '100%', width: '100%'}}>

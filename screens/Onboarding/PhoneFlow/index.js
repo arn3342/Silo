@@ -140,8 +140,8 @@ export default () => {
                 title='Country/Region'
                 style={{
                   borderRadius: 10,
-                  borderColor: '#000000',
-                  borderWidth: 1,
+                  // borderColor: '#000000',
+                  // borderWidth: 1,
                   padding: 10,
                   paddingLeft: 15,
                   paddingRight: 15,
