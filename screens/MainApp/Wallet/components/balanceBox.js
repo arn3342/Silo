@@ -1,7 +1,7 @@
-import React from 'react'
-import {View} from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
-import {AppText} from '../../../../global/components'
+import React from 'react';
+import {View} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
+import {AppText} from '../../../../global/components';
 
 export default ({balance}) => {
   return (
@@ -44,5 +44,5 @@ export default ({balance}) => {
         </View>
       </View>
     </View>
-  )
-}
+  );
+};

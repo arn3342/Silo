@@ -1,4 +1,4 @@
-import React, {useRef, useState} from 'react'
+import React, {useRef, useState} from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -7,17 +7,17 @@ import {
   TouchableHighlight,
   TouchableOpacity,
   View,
-} from 'react-native'
-import Icon from 'react-native-vector-icons/Feather'
-import RNPIckerSelect from 'react-native-picker-select'
-import LinearGradient from 'react-native-linear-gradient'
-import {useNavigation, useRoute} from '@react-navigation/native'
-import {getRoutes} from '../../data/routes'
-import Lottie from 'lottie-react-native'
+} from 'react-native';
+import Icon from 'react-native-vector-icons/Feather';
+import RNPIckerSelect from 'react-native-picker-select';
+import LinearGradient from 'react-native-linear-gradient';
+import {useNavigation, useRoute} from '@react-navigation/native';
+import {getRoutes} from '../../data/routes';
+import Lottie from 'lottie-react-native';
 
 const defaultFontStyles = {
   fontFamily: 'AirbnbCereal_W_Md',
-}
+};
 
 /**
  *
@@ -35,10 +35,10 @@ export const ScreenContainer = ({
   title,
   defaultSpacing = true,
   isUIBusy,
-  titleStyle
+  titleStyle,
 }) => {
-  const route = useRoute()
-  const getScreen = getRoutes().find(x => x.name === route.name)
+  const route = useRoute();
+  const getScreen = getRoutes().find(x => x.name === route.name);
   return (
     <View
       style={{
@@ -70,7 +70,7 @@ export const ScreenContainer = ({
             textAlign: 'center',
             fontSize: 16,
             fontWeight: '600',
-            ...titleStyle
+            ...titleStyle,
           }}>
           {title || getScreen.title || getScreen.options.title}
         </Text>
@@ -78,8 +78,8 @@ export const ScreenContainer = ({
         {children}
       </View>
     </View>
-  )
-}
+  );
+};
 
 /**
  *
@@ -96,10 +96,10 @@ export const Spacer = ({multiply = 1, orientation = 'vertical'}) => {
         }
       : {
           width: 5 * multiply,
-        }
+        };
 
-  return <View style={getStyles}></View>
-}
+  return <View style={getStyles}></View>;
+};
 /**
  *
  * @param {Object} props
@@ -117,10 +117,10 @@ export const Divider = ({multiply = 1, orientation = 'vertical'}) => {
       : {
           width: 1,
           height: '100%',
-        }
+        };
 
-  return <View style={[getStyles, {backgroundColor: '#D3D3D3'}]}></View>
-}
+  return <View style={[getStyles, {backgroundColor: '#D3D3D3'}]}></View>;
+};
 
 export const Picker = ({
   options,
@@ -129,7 +129,7 @@ export const Picker = ({
   title,
   style,
 }) => {
-  const pickerRef = useRef()
+  const pickerRef = useRef();
   return (
     <TouchableOpacity
       onPress={() => pickerRef.current?.togglePicker()}
@@ -150,11 +150,11 @@ export const Picker = ({
           },
         }}
         value={value}
-        Icon={() => (!title ? <Icon name='chevron-down' size={24} /> : <></>)}
+        Icon={() => (!title ? <Icon name="chevron-down" size={24} /> : <></>)}
       />
       {title && (
         <Icon
-          name='chevron-down'
+          name="chevron-down"
           size={24}
           style={{
             position: 'absolute',
@@ -163,8 +163,8 @@ export const Picker = ({
         />
       )}
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 /**
  *
@@ -182,10 +182,10 @@ export const CTAButton = ({
   isLoading,
   onPress = () => {},
 }) => {
-  const buttonRef = useRef()
-  function performPress () {
+  const buttonRef = useRef();
+  function performPress() {
     if (!isLoading) {
-      onPress()
+      onPress();
     }
   }
   return (
@@ -198,7 +198,7 @@ export const CTAButton = ({
       }}>
       <TouchableHighlight
         ref={buttonRef}
-        underlayColor='#A586DD'
+        underlayColor="#A586DD"
         style={{
           height: 55,
           justifyContent: 'center',
@@ -207,7 +207,7 @@ export const CTAButton = ({
         }}
         onPress={() => !isLoading && performPress()}>
         {isLoading ? (
-          <ActivityIndicator size='small' color={'#fff'} />
+          <ActivityIndicator size="small" color={'#fff'} />
         ) : (
           <AppText.Lg style={{textAlign: 'center', color: '#fff'}}>
             {label}
@@ -215,8 +215,8 @@ export const CTAButton = ({
         )}
       </TouchableHighlight>
     </LinearGradient>
-  )
-}
+  );
+};
 
 /**
  * The default Text component to be used in this app
@@ -270,9 +270,9 @@ export const AppText = {
   Xl: ({style, children}) => (
     <Text style={[defaultFontStyles, style, {fontSize: 26}]}>{children}</Text>
   ),
-}
+};
 
-export function CustomTabBar ({
+export function CustomTabBar({
   state,
   descriptors,
   navigation,
@@ -295,39 +295,39 @@ export function CustomTabBar ({
         overflow: 'visible',
       }}>
       {state.routes.map((route, index) => {
-        const {options} = descriptors[route.key]
+        const {options} = descriptors[route.key];
         const label =
           options.tabBarLabel !== undefined
             ? options.tabBarLabel
             : options.title !== undefined
             ? options.title
-            : route.name
+            : route.name;
 
-        const isFocused = state.index === index
+        const isFocused = state.index === index;
 
         const onPress = () => {
           const event = navigation.emit({
             type: 'tabPress',
             target: route.key,
             canPreventDefault: true,
-          })
+          });
 
           if (!isFocused && !event.defaultPrevented) {
             // The `merge: true` option makes sure that the params inside the tab screen are preserved
-            navigation.navigate({name: route.name, merge: true})
+            navigation.navigate({name: route.name, merge: true});
           }
-        }
+        };
 
         const onLongPress = () => {
           navigation.emit({
             type: 'tabLongPress',
             target: route.key,
-          })
-        }
+          });
+        };
 
         const RegularTab = () => (
           <TouchableOpacity
-            accessibilityRole='button'
+            accessibilityRole="button"
             // accessibilityState={isFocused ? {selected: true} : {}}
             // accessibilityLabel={options.tabBarAccessibilityLabel}
             onPress={onPress}
@@ -351,11 +351,11 @@ export function CustomTabBar ({
               {label}
             </Text>
           </TouchableOpacity>
-        )
+        );
 
         const SpecialTab = () => (
           <TouchableOpacity
-            accessibilityRole='button'
+            accessibilityRole="button"
             // accessibilityState={isFocused ? {selected: true} : {}}
             // accessibilityLabel={options.tabBarAccessibilityLabel}
             onPress={onPress}
@@ -400,16 +400,16 @@ export function CustomTabBar ({
               {label}
             </Text> */}
           </TouchableOpacity>
-        )
+        );
 
         return index == specialTabIndex ? (
           <SpecialTab key={index} />
         ) : (
           <RegularTab key={index} />
-        )
+        );
       })}
     </View>
-  )
+  );
 }
 
 /**
@@ -432,7 +432,7 @@ export const AppTextInput = ({
   purpose,
   value,
 }) => {
-  const [focused, setFocued] = useState(false)
+  const [focused, setFocued] = useState(false);
   return (
     <View
       style={[
@@ -460,12 +460,12 @@ export const AppTextInput = ({
         </AppText.Xs>
       )}
       <TextInput
-        placeholder='0.00'
+        placeholder="0.00"
         style={[
           {
             fontSize: 20,
             color: focused ? '#000' : '#D3D3D3',
-            width: '100%'
+            width: '100%',
           },
           inputStyle,
         ]}
@@ -476,5 +476,5 @@ export const AppTextInput = ({
         {...inputProps}
       />
     </View>
-  )
-}
+  );
+};

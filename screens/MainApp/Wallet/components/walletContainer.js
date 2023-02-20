@@ -1,14 +1,14 @@
-import React, {useState} from 'react'
-import {Image, StyleSheet, TouchableOpacity, View} from 'react-native'
-import {AppText, Spacer} from '../../../../global/components'
-import Icon from 'react-native-vector-icons/Feather'
-import LinearGradient from 'react-native-linear-gradient'
+import React, {useState} from 'react';
+import {Image, StyleSheet, TouchableOpacity, View} from 'react-native';
+import {AppText, Spacer} from '../../../../global/components';
+import Icon from 'react-native-vector-icons/Feather';
+import LinearGradient from 'react-native-linear-gradient';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
   withSpring,
   withTiming,
-} from 'react-native-reanimated'
+} from 'react-native-reanimated';
 
 const dummyAssets = [
   {
@@ -35,7 +35,7 @@ const dummyAssets = [
     value: 40000.21,
     coinName: 'ALGO Coin',
   },
-]
+];
 
 /**
  *
@@ -58,9 +58,9 @@ export const SingleWallet = ({
   coinName,
   onPress,
   style,
-  textStyle
+  textStyle,
 }) => {
-  const colors = ['#4B3AB4', '#3FC3CB', '#BF7C3F']
+  const colors = ['#4B3AB4', '#3FC3CB', '#BF7C3F'];
 
   return (
     <TouchableOpacity
@@ -71,7 +71,7 @@ export const SingleWallet = ({
         justifyContent: 'space-between',
         alignItems: 'center',
         marginBottom: 15,
-        ...style
+        ...style,
       }}
       onPress={onPress}>
       <View style={{flexDirection: 'row'}}>
@@ -86,12 +86,16 @@ export const SingleWallet = ({
         />
         <View style={{paddingLeft: 10, justifyContent: 'center'}}>
           <AppText.Md style={textStyle}>{name}</AppText.Md>
-          <AppText.Xs style={{color: '#999999', ...textStyle}}>{accountID}</AppText.Xs>
+          <AppText.Xs style={{color: '#999999', ...textStyle}}>
+            {accountID}
+          </AppText.Xs>
         </View>
       </View>
       {value && (
         <View>
-          <AppText.Md style={textStyle}>$ {Number(value).toLocaleString('en-US')}</AppText.Md>
+          <AppText.Md style={textStyle}>
+            $ {Number(value).toLocaleString('en-US')}
+          </AppText.Md>
           <View
             style={{
               flexDirection: 'row',
@@ -102,7 +106,7 @@ export const SingleWallet = ({
               style={{
                 textAlign: 'right',
                 color: colors[Math.floor(Math.random() * colors.length)],
-                ...textStyle
+                ...textStyle,
               }}>
               {coinName}
             </AppText.Xs>
@@ -110,8 +114,8 @@ export const SingleWallet = ({
         </View>
       )}
     </TouchableOpacity>
-  )
-}
+  );
+};
 
 const AddAsset_Button = ({onPress}) => (
   <TouchableOpacity
@@ -136,7 +140,7 @@ const AddAsset_Button = ({onPress}) => (
           alignItems: 'center',
           borderStyle: 'dashed',
         }}>
-        <Icon name='plus' color={'#A586DD'} size={24} />
+        <Icon name="plus" color={'#A586DD'} size={24} />
       </View>
       <View style={{paddingLeft: 10, justifyContent: 'center'}}>
         <AppText.Md style={{color: '#4f2994'}}>Add Wallet</AppText.Md>
@@ -146,7 +150,7 @@ const AddAsset_Button = ({onPress}) => (
       </View>
     </View>
   </TouchableOpacity>
-)
+);
 
 const ShowAll_Button = ({onPress, isExpanded}) => (
   <TouchableOpacity style={styles.ShowButton} onPress={onPress}>
@@ -172,7 +176,7 @@ const ShowAll_Button = ({onPress, isExpanded}) => (
       </AppText.Md>
     </LinearGradient>
   </TouchableOpacity>
-)
+);
 
 export default ({
   showAddButton = true,
@@ -180,32 +184,32 @@ export default ({
   onWalletPress,
   expanded,
 }) => {
-  const [isExpanded, setExpanded] = useState(expanded)
-  const item_height = 75
+  const [isExpanded, setExpanded] = useState(expanded);
+  const item_height = 75;
 
   const animatedStyles = {
     height: useSharedValue(item_height * (dummyAssets.length - 1)),
-  }
+  };
 
   const containerStyle = useAnimatedStyle(() => {
     return {
       height: animatedStyles.height.value,
-    }
-  })
+    };
+  });
 
-  function expandOrCollapse () {
+  function expandOrCollapse() {
     if (!isExpanded) {
       animatedStyles.height.value = withSpring(
         dummyAssets.length * item_height,
         500,
-      )
+      );
     } else {
       animatedStyles.height.value = withSpring(
         item_height * (dummyAssets.length / 2),
         500,
-      )
+      );
     }
-    setExpanded(prev => !prev)
+    setExpanded(prev => !prev);
   }
 
   return (
@@ -218,8 +222,8 @@ export default ({
         <ShowAll_Button onPress={expandOrCollapse} isExpanded={isExpanded} />
       )}
     </Animated.View>
-  )
-}
+  );
+};
 
 const styles = StyleSheet.create({
   ShowButton: {
@@ -228,4 +232,4 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
   },
-})
+});

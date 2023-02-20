@@ -1,21 +1,21 @@
-import React, {useEffect, useRef, useState} from 'react'
+import React, {useEffect, useRef, useState} from 'react';
 import {
   Image,
   ScrollView,
   Touchable,
   TouchableOpacity,
   View,
-} from 'react-native'
-import LinearGradient from 'react-native-linear-gradient'
+} from 'react-native';
+import LinearGradient from 'react-native-linear-gradient';
 import {
   AppText,
   CTAButton,
   Divider,
   ScreenContainer,
   Spacer,
-} from '../../../global/components'
-import Icon from 'react-native-vector-icons/Feather'
-import {trimString} from '../../../data/extensions/stringHelper'
+} from '../../../global/components';
+import Icon from 'react-native-vector-icons/Feather';
+import {trimString} from '../../../data/extensions/stringHelper';
 import Animated, {
   Transition,
   FadeIn,
@@ -28,11 +28,11 @@ import Animated, {
   SlideInLeft,
   ZoomIn,
   ZoomOut,
-} from 'react-native-reanimated'
-import WalletContainer from '../Wallet/components/walletContainer'
-import {SwapContainer} from './components'
-import { useNavigation } from '@react-navigation/native'
-import { AppRoutes } from '../../../data/routes'
+} from 'react-native-reanimated';
+import WalletContainer from '../Wallet/components/walletContainer';
+import {SwapContainer} from './components';
+import {useNavigation} from '@react-navigation/native';
+import {AppRoutes} from '../../../data/routes';
 
 const dummyData = [
   {
@@ -43,13 +43,13 @@ const dummyData = [
     name: 'Coinbase Pro',
     accountID: 'asjdklasjdlksa',
   },
-]
+];
 
 export default () => {
-  const [swapData, setSwapData] = useState([])
-  const navigation = useNavigation()
-  function goToAmount () {
-    navigation.navigate(AppRoutes.TransferAmount.name)
+  const [swapData, setSwapData] = useState([]);
+  const navigation = useNavigation();
+  function goToAmount() {
+    navigation.navigate(AppRoutes.TransferAmount.name);
   }
   return (
     <ScreenContainer>
@@ -60,8 +60,8 @@ export default () => {
             onRemove={() => setSwapData([])}
             onSwitch={() =>
               setSwapData(prev => {
-                const spread = [...prev]
-                return spread.reverse()
+                const spread = [...prev];
+                return spread.reverse();
               })
             }
           />
@@ -88,7 +88,7 @@ export default () => {
                   swapData.length < 2 &&
                   !swapData.find(x => x.name === data.name)
                 )
-                  setSwapData(prev => [...prev, data])
+                  setSwapData(prev => [...prev, data]);
               }}
             />
             <Spacer multiply={4} />
@@ -103,7 +103,7 @@ export default () => {
             {swapData.length > 1 && (
               <Animated.View entering={FadeIn} exiting={FadeOut}>
                 <CTAButton
-                  label='Continue To Transfer'
+                  label="Continue To Transfer"
                   style={{
                     height: 50,
                   }}
@@ -115,5 +115,5 @@ export default () => {
         </ScrollView>
       </View>
     </ScreenContainer>
-  )
-}
+  );
+};
