@@ -25,7 +25,7 @@ const Mockdata = [
   },
 ];
 
-const tabs = [
+const chartDummyData = [
   {
     id: 0,
     title: '1D',
@@ -67,4 +67,4 @@ const tabs = [
   },
 ];
 
-export {Mockdata, tabs};
+export {Mockdata, chartDummyData};

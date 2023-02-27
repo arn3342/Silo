@@ -1,15 +1,15 @@
-import React, {useEffect} from 'react'
-import RNBootSplash from 'react-native-bootsplash'
-import {createNativeStackNavigator} from '@react-navigation/native-stack'
-import {Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native'
-import {AppRoutes, AuthRoutes, getDedicatedRoutes} from './data/routes'
-import OnboardingScreens from './screens/Onboarding'
-import {NavigationContainer} from '@react-navigation/native'
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
-import Lottie from 'lottie-react-native'
-import {CustomTabBar} from './global/components'
+import React, {useEffect} from 'react';
+import RNBootSplash from 'react-native-bootsplash';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import {Image, SafeAreaView, Text, TouchableOpacity, View} from 'react-native';
+import {AppRoutes, AuthRoutes, getDedicatedRoutes} from './data/routes';
+import OnboardingScreens from './screens/Onboarding';
+import {NavigationContainer} from '@react-navigation/native';
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
+import Lottie from 'lottie-react-native';
+import {CustomTabBar} from './global/components';
 const AuthNav = () => {
-  const AuthStack = createNativeStackNavigator()
+  const AuthStack = createNativeStackNavigator();
 
   return (
     <AuthStack.Navigator screenOptions={headerOptions}>
@@ -27,11 +27,11 @@ const AuthNav = () => {
         // options={{gestureEnabled: false}}
       />
     </AuthStack.Navigator>
-  )
-}
+  );
+};
 
 const SwapNav = () => {
-  const SwapStack = createNativeStackNavigator()
+  const SwapStack = createNativeStackNavigator();
 
   return (
     <SwapStack.Navigator
@@ -45,12 +45,12 @@ const SwapNav = () => {
         <SwapStack.Screen {...AppRoutes.TransferConfirm} />
       </SwapStack.Group>
     </SwapStack.Navigator>
-  )
-}
+  );
+};
 
 const AppNav = () => {
-  const AppStack = createBottomTabNavigator()
-  const app_routes = getDedicatedRoutes().AppRoutes
+  const AppStack = createBottomTabNavigator();
+  const app_routes = getDedicatedRoutes().AppRoutes;
   return (
     <AppStack.Navigator
       screenOptions={headerOptions}
@@ -59,15 +59,15 @@ const AppNav = () => {
       <AppStack.Screen {...AppRoutes.TransferInit} component={SwapNav} />
       <AppStack.Screen {...AppRoutes.Accounts} />
     </AppStack.Navigator>
-  )
-}
+  );
+};
 
 const App = () => {
   useEffect(() => {
-    RNBootSplash.hide({fade: true})
-  }, [])
+    RNBootSplash.hide({fade: true});
+  }, []);
 
-  const ParentStack = createNativeStackNavigator()
+  const ParentStack = createNativeStackNavigator();
 
   return (
     // <Provider store={store}>
@@ -86,10 +86,10 @@ const App = () => {
       </NavigationContainer>
     </SafeAreaView>
     // </Provider>
-  )
-}
-export default App
+  );
+};
+export default App;
 
 const headerOptions = {
   headerShown: false,
-}
+};

@@ -1,12 +1,42 @@
-import React from 'react';
-import {ScrollView, StyleSheet, View} from 'react-native';
+import React, {createElement, useCallback, useEffect, useState} from 'react';
+import {ScrollView, StyleSheet, View, Text} from 'react-native';
+import {PlaidLink, LinkExit, LinkSuccess} from 'react-native-plaid-link-sdk';
 import {CTAButton, Divider, ScreenContainer} from '../../../global/components';
+import CreateLinkToken from '../../../services/API_actions';
 import AccountList from './AccountList';
 import ChartSection from './ChartSection';
-
 import NetWorthBox from './components/NetWorthBox';
 
 export default () => {
+  const [linkToken, setLinkToken] = useState(
+    'link-sandbox-7dfe906c-f390-48fd-a2a9-7dc7830ad3ed',
+  );
+
+  const createLinkToken = async () => {
+    await fetch(
+      `https://us-central1-silo-40612.cloudfunctions.net/createPayment`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        // body: JSON.stringify({address: address}),
+      },
+    )
+      .then(response => response.json())
+      .then(data => {
+        console.log('response >>> ', data?.link_token);
+        setLinkToken(data?.link_token);
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
+
+  useEffect(() => {
+    createLinkToken();
+  }, []);
+
   return (
     <ScreenContainer>
       <ScrollView
@@ -19,11 +49,40 @@ export default () => {
       </ScrollView>
       <Divider />
       <View style={styles.btn_section}>
-        <CTAButton
+        {/* <CTAButton
           label="Add New Account"
-          onPress={() => alert('clicked : test purpose')}
+          onPress={() => createLinkToken()}
           style={styles.btnStyle}
-        />
+        /> */}
+        {linkToken && (
+          <PlaidLink
+            tokenConfig={{
+              token: linkToken,
+              noLoadingState: false,
+            }}
+            onSuccess={async (success: LinkSuccess) => {
+              await fetch(
+                `https://us-central1-silo-40612.cloudfunctions.net/ExchangePublic_token`,
+                {
+                  method: 'POST',
+                  headers: {
+                    'Content-Type': 'application/json',
+                  },
+                  body: JSON.stringify({public_token: linkToken}),
+                },
+              ).catch(err => {
+                console.log(err);
+              });
+              navigation.navigate('Success', success);
+            }}
+            onExit={(response: LinkExit) => {
+              console.log(response);
+            }}>
+            <View style={styles.buttonContainer}>
+              <Text style={styles.buttonText}>Add New Account</Text>
+            </View>
+          </PlaidLink>
+        )}
       </View>
     </ScreenContainer>
   );
@@ -34,5 +93,17 @@ const styles = StyleSheet.create({
   btn_section: {height: 96, justifyContent: 'center'},
   btnStyle: {
     height: 48,
+  },
+  buttonContainer: {
+    backgroundColor: '#A586DD',
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 48,
+    borderRadius: 10,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 20,
+    fontWeight: '500',
   },
 });

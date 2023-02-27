@@ -48,6 +48,7 @@
 		85CF063A298364250003FA73 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		85F401702983A012004E13C2 /* Fonts */ = {isa = PBXFileReference; lastKnownFileType = folder; name = Fonts; path = "../../node_modules/react-native-vector-icons/Fonts"; sourceTree = "<group>"; };
 		85F4019A2984EDF2004E13C2 /* AirbnbCereal_W_Md.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = AirbnbCereal_W_Md.ttf; sourceTree = "<group>"; };
+		978391D829A4C5D0005AF1F0 /* silo.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; name = silo.entitlements; path = silo/silo.entitlements; sourceTree = "<group>"; };
 		A9E39CFA7725E0423BAF6468 /* Pods_silo_siloTests.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_silo_siloTests.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		D4CE05C0EFA1DB5D510B72C6 /* Pods-silo.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-silo.debug.xcconfig"; path = "Target Support Files/Pods-silo/Pods-silo.debug.xcconfig"; sourceTree = "<group>"; };
 		EA4619D8030B71FD9A047961 /* Pods-silo-siloTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-silo-siloTests.release.xcconfig"; path = "Target Support Files/Pods-silo-siloTests/Pods-silo-siloTests.release.xcconfig"; sourceTree = "<group>"; };
@@ -98,6 +99,7 @@
 		13B07FAE1A68108700A75B9A /* silo */ = {
 			isa = PBXGroup;
 			children = (
+				978391D829A4C5D0005AF1F0 /* silo.entitlements */,
 				13B07FAF1A68108700A75B9A /* AppDelegate.h */,
 				13B07FB01A68108700A75B9A /* AppDelegate.mm */,
 				13B07FB51A68108700A75B9A /* Images.xcassets */,
@@ -491,8 +493,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = silo/silo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LPR2LS8566;
+				DEVELOPMENT_TEAM = "";
 				ENABLE_BITCODE = NO;
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = silo/Info.plist;
@@ -519,8 +522,9 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
+				CODE_SIGN_ENTITLEMENTS = silo/silo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = LPR2LS8566;
+				DEVELOPMENT_TEAM = "";
 				"EXCLUDED_ARCHS[sdk=iphonesimulator*]" = arm64;
 				INFOPLIST_FILE = silo/Info.plist;
 				LD_RUNPATH_SEARCH_PATHS = (

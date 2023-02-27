@@ -1,7 +1,7 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {LineChart} from 'react-native-svg-charts';
-import {tabs} from './staticData';
+import {chartDummyData} from './staticData';
 
 const ChartSection = () => {
   const [color, setColor] = useState(0);
@@ -11,6 +11,10 @@ const ChartSection = () => {
     setColor(index);
     setData(item.chartData);
   };
+
+  useEffect(() => {
+    setData(chartDummyData[0].chartData);
+  }, []);
 
   const renderItem = ({item, index}) => {
     return (
@@ -37,11 +41,11 @@ const ChartSection = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.secondary_txt}>$216,201.97</Text>
+      <Text style={styles.secondary_txt}>$ 216,201.97</Text>
 
       <LineChart
         style={{height: 200}}
-        data={[...data, data]}
+        data={data}
         svg={{stroke: '#A586DD'}}
         contentInset={{top: 20, bottom: 20}}></LineChart>
 
@@ -54,7 +58,7 @@ const ChartSection = () => {
       </Text>
 
       <FlatList
-        data={tabs}
+        data={chartDummyData}
         renderItem={renderItem}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
