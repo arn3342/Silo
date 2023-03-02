@@ -13,16 +13,13 @@ export default () => {
   );
 
   const createLinkToken = async () => {
-    await fetch(
-      `https://us-central1-silo-40612.cloudfunctions.net/createPayment`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        // body: JSON.stringify({address: address}),
+    await fetch(`http://127.0.0.1:5001/silo-40612/us-central1/createPayment`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
       },
-    )
+      // body: JSON.stringify({address: address}),
+    })
       .then(response => response.json())
       .then(data => {
         console.log('response >>> ', data?.link_token);
@@ -36,7 +33,7 @@ export default () => {
   useEffect(() => {
     createLinkToken();
   }, []);
-
+  console.log('linkToken ?? ', linkToken);
   return (
     <ScreenContainer>
       <ScrollView
@@ -61,14 +58,19 @@ export default () => {
               noLoadingState: false,
             }}
             onSuccess={async (success: LinkSuccess) => {
+              console.log('toek n<<<< >>>> ', success);
+              console.log(
+                '>>>. ',
+                JSON.stringify({public_token: success.publicToken}),
+              );
               await fetch(
-                `https://us-central1-silo-40612.cloudfunctions.net/ExchangePublic_token`,
+                `http://127.0.0.1:5001/silo-40612/us-central1/ExchangePublic_token`,
                 {
                   method: 'POST',
                   headers: {
                     'Content-Type': 'application/json',
                   },
-                  body: JSON.stringify({public_token: linkToken}),
+                  body: JSON.stringify({public_token: success.publicToken}),
                 },
               ).catch(err => {
                 console.log(err);

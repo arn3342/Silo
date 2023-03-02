@@ -1,11 +1,15 @@
 import {FlatList, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import React, {useEffect, useState} from 'react';
-import {LineChart} from 'react-native-svg-charts';
 import {chartDummyData} from './staticData';
+import {LineChart, Path} from 'react-native-svg-charts';
+import * as shape from 'd3-shape';
 
 const ChartSection = () => {
   const [color, setColor] = useState(0);
   const [data, setData] = useState([]);
+
+  const curve = shape.curveMonotoneX;
+  const linewidth = 3;
 
   const handleTab = (item, index) => {
     setColor(index);
@@ -46,8 +50,20 @@ const ChartSection = () => {
       <LineChart
         style={{height: 200}}
         data={data}
-        svg={{stroke: '#A586DD'}}
-        contentInset={{top: 20, bottom: 20}}></LineChart>
+        svg={{stroke: '#A586DD', strokeWidth: 2.5}}
+        curve={curve}
+        contentInset={{top: 20, bottom: 20}}>
+        <Path />
+      </LineChart>
+
+      {/* <LineChart
+        style={{flex: 1}}
+        data={data}
+        svg={{stroke: 'rgb(134, 65, 244)'}}
+        contentInset={{top: 20, bottom: 20}}
+        curve={curve}>
+        <Path />
+      </LineChart> */}
 
       <Text
         style={[
