@@ -1,6 +1,6 @@
-import React, {useEffect, useState} from 'react'
-import {TextInput} from 'react-native'
-import {AppText, CTAButton, Spacer} from '../../../global/components'
+import React, {useEffect, useState} from 'react';
+import {TextInput} from 'react-native';
+import {AppText, CTAButton, Spacer} from '../../../global/components';
 import Animated, {
   FadeInRight,
   FadeOutLeft,
@@ -8,94 +8,94 @@ import Animated, {
   useAnimatedStyle,
   withTiming,
   withSequence,
-} from 'react-native-reanimated'
-import {useAuthHook} from '../../../data/database/user/auth'
-import {Formik} from 'formik'
+} from 'react-native-reanimated';
+import {useAuthHook} from '../../../data/database/user/auth';
+import {Formik} from 'formik';
 import {
   StringHelper,
   validateEmail,
-} from '../../../data/extensions/stringHelper'
-import {useNavigation} from '@react-navigation/native'
-import {AppRoutes} from '../../../data/routes'
+} from '../../../data/extensions/stringHelper';
+import {useNavigation} from '@react-navigation/native';
+import {AppRoutes} from '../../../data/routes';
 
 export default () => {
   const {isBusy, validateSignin, signUpWithEmailCreds, signInWithEmailCreds} =
-    useAuthHook()
+    useAuthHook();
   const [mailCheck, setMailCheck] = useState({
     checkPassed: false,
     isNew: false,
-  })
-  const navigation = useNavigation()
+  });
+  const navigation = useNavigation();
 
-  const formHeight = useSharedValue(0)
+  const formHeight = useSharedValue(0);
   const errorAnimValues = {
     translateX: useSharedValue(0),
     borderColor: useSharedValue('#A6A6A6'),
-  }
+  };
 
   const animatedStyles = useAnimatedStyle(() => {
     return {
       height: formHeight.value, //change the height property of the component
-    }
-  })
+    };
+  });
 
   const formAnimatedStyle = useAnimatedStyle(() => {
     return {
       transform: [{translateX: errorAnimValues.translateX.value}],
       borderColor: errorAnimValues.borderColor.value,
-    }
-  })
+    };
+  });
 
-  async function checkExistingEmail (email) {
-    const result = await validateSignin({email: email})
+  async function checkExistingEmail(email) {
+    const result = await validateSignin({email: email});
     if (result.success) {
       if (result.data?.length <= 0) {
         setMailCheck({
           checkPassed: true,
           isNew: true,
-        })
+        });
       } else {
         setMailCheck({
           checkPassed: true,
           isNew: false,
-        })
+        });
       }
     } else {
-      triggerErrorShake()
+      triggerErrorShake();
     }
   }
 
-  async function performAuth (values) {
+  async function performAuth(values) {
     if (!mailCheck.checkPassed) {
-      checkExistingEmail(values.email)
+      checkExistingEmail(values.email);
     } else {
       if (mailCheck.isNew) {
         const result = await signUpWithEmailCreds({
           email: values.email,
           password: values.password,
-        })
-
+        });
+        console.log('result ??', result);
         if (result.success) {
           navigation.reset({
             index: 0,
             routes: [AppRoutes.default],
-          })
+          });
         } else {
-          triggerErrorShake()
+          triggerErrorShake();
         }
       } else {
         const result = await signInWithEmailCreds({
           email: values.email,
           password: values.password,
-        })
+        });
 
         if (result.success) {
           navigation.reset({
             index: 0,
             routes: [AppRoutes.default],
-          })
+          });
         } else {
-          triggerErrorShake()
+          triggerErrorShake();
         }
       }
     }
@@ -104,28 +104,28 @@ export default () => {
   useEffect(() => {
     if (mailCheck.checkPassed) {
       if (mailCheck.isNew) {
-        formHeight.value = withTiming(150)
+        formHeight.value = withTiming(150);
       } else {
-        formHeight.value = withTiming(50)
+        formHeight.value = withTiming(50);
       }
     } else {
-      formHeight.value = withTiming(0)
+      formHeight.value = withTiming(0);
     }
-  }, [mailCheck.checkPassed, mailCheck.isNew])
+  }, [mailCheck.checkPassed, mailCheck.isNew]);
 
-  function getButtonText () {
+  function getButtonText() {
     if (mailCheck.checkPassed) {
-      return mailCheck.isNew ? 'Create Account' : 'Log In'
+      return mailCheck.isNew ? 'Create Account' : 'Log In';
     } else {
-      return 'Continue'
+      return 'Continue';
     }
   }
 
-  function triggerErrorShake () {
+  function triggerErrorShake() {
     errorAnimValues.borderColor.value = withSequence(
       withTiming('#ff2b2b', {duration: 700}),
       withTiming('#A6A6A6', {duration: 100}),
-    )
+    );
 
     errorAnimValues.translateX.value = withSequence(
       withTiming(10, {duration: 100}),
@@ -135,7 +135,7 @@ export default () => {
       withTiming(10, {duration: 100}),
       withTiming(-10, {duration: 100}),
       withTiming(0, {duration: 100}),
-    )
+    );
   }
 
   return (
@@ -149,9 +149,9 @@ export default () => {
         validateOnChange={false}
         validateOnBlur={false}
         validate={values => {
-          const errors = {}
+          const errors = {};
           if (!validateEmail(values.email))
-            errors.email = 'Invalid email address'
+            errors.email = 'Invalid email address';
 
           if (mailCheck.checkPassed) {
             if (
@@ -160,19 +160,19 @@ export default () => {
                 mailCheck.isNew ? [] : ['password', 'fullName'],
               )
             ) {
-              errors.all = 'Please fill in all details'
+              errors.all = 'Please fill in all details';
             }
           }
 
           if (Object.keys(errors).length > 0) {
-            console.log('Found error:', errors)
-            triggerErrorShake()
+            console.log('Found error:', errors);
+            triggerErrorShake();
           }
 
-          return errors
+          return errors;
         }}
         onSubmit={(values, {setSubmitting}) => {
-          performAuth(values, setSubmitting)
+          performAuth(values, setSubmitting);
         }}>
         {({
           values,
@@ -196,7 +196,7 @@ export default () => {
               ]}>
               <Spacer />
               <TextInput
-                placeholder='Your Email'
+                placeholder="Your Email"
                 style={{
                   fontSize: 18,
                   padding: 10,
@@ -204,12 +204,12 @@ export default () => {
                   paddingRight: 15,
                 }}
                 value={values.email}
-                keyboardType='email-address'
+                keyboardType="email-address"
                 onChangeText={val => {
-                  setFieldValue('email', val)
-                  mailCheck.checkPassed && setMailCheck({checkPassed: false})
+                  setFieldValue('email', val);
+                  mailCheck.checkPassed && setMailCheck({checkPassed: false});
                 }}
-                autoCapitalize='none'
+                autoCapitalize="none"
                 autoCorrect={false}
               />
               <Animated.View style={[animatedStyles, {overflow: 'hidden'}]}>
@@ -217,7 +217,7 @@ export default () => {
                   <>
                     <Spacer multiply={2} />
                     <TextInput
-                      placeholder='Your Name'
+                      placeholder="Your Name"
                       autoFocus
                       style={{
                         fontSize: 18,
@@ -227,7 +227,7 @@ export default () => {
                       }}
                       value={values.fullName}
                       onChangeText={handleChange('fullName')}
-                      autoCapitalize='none'
+                      autoCapitalize="none"
                       autoCorrect={false}
                     />
                     <Spacer multiply={2} />
@@ -245,7 +245,7 @@ export default () => {
                       }}
                       value={values.password}
                       onChangeText={handleChange('password')}
-                      autoCapitalize='none'
+                      autoCapitalize="none"
                       autoCorrect={false}
                       secureTextEntry
                     />
@@ -276,7 +276,7 @@ export default () => {
                       }}
                       value={values.password}
                       onChangeText={handleChange('password')}
-                      autoCapitalize='none'
+                      autoCapitalize="none"
                       autoCorrect={false}
                       secureTextEntry
                     />
@@ -295,5 +295,5 @@ export default () => {
         )}
       </Formik>
     </Animated.View>
-  )
-}
+  );
+};

@@ -61,7 +61,8 @@ export default () => {
               console.log('toek n<<<< >>>> ', success);
               console.log(
                 '>>>. ',
-                JSON.stringify({public_token: success.publicToken}),
+                JSON.stringify(success.publicToken, null, 4),
+                console.log('metadata ?? ', success.metadata.accounts),
               );
               await fetch(
                 `http://127.0.0.1:5001/silo-40612/us-central1/ExchangePublic_token`,
