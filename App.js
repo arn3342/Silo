@@ -8,6 +8,9 @@ import {NavigationContainer} from '@react-navigation/native';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
 import Lottie from 'lottie-react-native';
 import {CustomTabBar} from './global/components';
+import {PersistGate} from 'redux-persist/integration/react';
+import {Provider} from 'react-redux';
+import {persistor, store} from './redux/Store';
 const AuthNav = () => {
   const AuthStack = createNativeStackNavigator();
 
@@ -70,22 +73,24 @@ const App = () => {
   const ParentStack = createNativeStackNavigator();
 
   return (
-    // <Provider store={store}>
-    <SafeAreaView style={{height: '100%', width: '100%'}}>
-      <NavigationContainer>
-        <ParentStack.Navigator screenOptions={headerOptions}>
-          <ParentStack.Screen
-            name={AuthRoutes.default.name}
-            component={AuthNav}
-          />
-          <ParentStack.Screen
-            name={AppRoutes.default.name}
-            component={AppNav}
-          />
-        </ParentStack.Navigator>
-      </NavigationContainer>
-    </SafeAreaView>
-    // </Provider>
+    <Provider store={store}>
+      <PersistGate loading={null} persistor={persistor}>
+        <SafeAreaView style={{height: '100%', width: '100%'}}>
+          <NavigationContainer>
+            <ParentStack.Navigator screenOptions={headerOptions}>
+              <ParentStack.Screen
+                name={AuthRoutes.default.name}
+                component={AuthNav}
+              />
+              <ParentStack.Screen
+                name={AppRoutes.default.name}
+                component={AppNav}
+              />
+            </ParentStack.Navigator>
+          </NavigationContainer>
+        </SafeAreaView>
+      </PersistGate>
+    </Provider>
   );
 };
 export default App;

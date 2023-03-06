@@ -73,6 +73,7 @@ export default () => {
         const result = await signUpWithEmailCreds({
           email: values.email,
           password: values.password,
+          name: values.fullName,
         });
         console.log('result ??', result);
         if (result.success) {

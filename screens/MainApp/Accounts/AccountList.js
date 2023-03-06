@@ -15,8 +15,6 @@ const renderItem = ({item}) => {
   );
 };
 
-console.log('mock data >> ', Mockdata);
-
 const AccountList = () => {
   return (
     <View style={{marginTop: 0}}>

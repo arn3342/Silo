@@ -1,4 +1,4 @@
-import {useSelector} from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import {NativeFirebaseError} from '@react-native-firebase/app';
 import auth from '@react-native-firebase/auth';
 import {ParseFirebaseError} from '../errors';
@@ -6,10 +6,12 @@ import {ParseFirebaseError} from '../errors';
 import axios from 'axios';
 import {useState} from 'react';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
+import {isExistUser, userCollation} from '../../../services/FirebaseSerives';
+import {setUserDetails} from '../../../redux/Actions/UserActions';
 
 export const useAuthHook = () => {
   const [isBusy, setIsBusy] = useState(false);
-
+  const dispatch = useDispatch();
   async function validateSignin({email, phone}) {
     setIsBusy(true);
     try {
@@ -61,6 +63,7 @@ export const useAuthHook = () => {
     try {
       const authResult = await auth().signInWithPhoneNumber(phoneNumber, true);
       setIsBusy(false);
+      console.log('signInWithPhone ', authResult);
       return {data: authResult, success: true};
     } catch (ex) {
       setIsBusy(false);
@@ -80,6 +83,9 @@ export const useAuthHook = () => {
         email,
         password,
       );
+      const userId = authResult.user.uid;
+      const userDetails = await userCollation.doc(userId).get();
+      dispatch(setUserDetails(userDetails.data()));
       setIsBusy(false);
       return {...authResult, success: true};
     } catch (ex) {
@@ -100,6 +106,7 @@ export const useAuthHook = () => {
     try {
       const authResult = await auth().signInWithCustomToken(token);
       setIsBusy(false);
+      console.log('respons >> ', authResult);
       return {...authResult, success: true};
     } catch (ex) {
       setIsBusy(false);
@@ -112,7 +119,7 @@ export const useAuthHook = () => {
     }
   }
 
-  async function signUpWithEmailCreds({email, password}) {
+  async function signUpWithEmailCreds({email, password, name}) {
     setIsBusy(true);
     try {
       const authResult = await auth().createUserWithEmailAndPassword(
@@ -120,6 +127,31 @@ export const useAuthHook = () => {
         password,
       );
       setIsBusy(false);
+      const user = {
+        name: name,
+        email: authResult.user.email,
+        image:
+          authResult.user.photoURL === null
+            ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCVGv_UuZYSFHHJvsXgIZduF0QC1NCe_f3BXBYUwrPfw&s'
+            : authResult.user.photoURL,
+        _id: authResult.user.uid,
+        created_at: new Date(),
+      };
+
+      dispatch(setUserDetails(user));
+      const check = await isExistUser(authResult.user.uid);
+      console.log('result.user.uid ?? ', check);
+      if (!check) {
+        userCollation
+          .doc(authResult.user.uid)
+          .set(user)
+          .then(res => {
+            console.log('response >> ', res);
+          })
+          .catch(ce => {
+            console.log('catch error ', ce);
+          });
+      }
       return {...authResult, success: true};
     } catch (ex) {
       setIsBusy(false);
@@ -144,11 +176,29 @@ export const useAuthHook = () => {
       const googleCredential = auth.GoogleAuthProvider.credential(idToken);
       const result = await signInWithCreds(googleCredential);
       setIsBusy(false);
-      console.log('result >>> ', result);
-      return {
-        ...result,
-        success: true,
+
+      const user = {
+        name: result.user.displayName,
+        email: result.user.email,
+        image: result.user.photoURL,
+        _id: result.user.uid,
+        created_at: new Date(),
       };
+      dispatch(setUserDetails(user));
+      const check = await isExistUser(result.user.uid);
+      if (!check) {
+        userCollation
+          .doc(result.user.uid)
+          .set(user)
+          .then(res => {
+            console.log('response >> ', res);
+          })
+          .catch(ce => {
+            console.log('catch error ', ce);
+          });
+      }
+      return {...result, success: true};
+      // console.log('user info for store user >. ', user);
     } catch (ex) {
       setIsBusy(false);
 
