@@ -4,44 +4,60 @@ import {PlaidLink, LinkExit, LinkSuccess} from 'react-native-plaid-link-sdk';
 import {useSelector} from 'react-redux';
 import {CTAButton, Divider, ScreenContainer} from '../../../global/components';
 import CreateLinkToken from '../../../services/API_actions';
-import {bankAccount} from '../../../services/FirebaseSerives';
+import {bankAccount, userCollation} from '../../../services/FirebaseSerives';
 import AccountList from './AccountList';
 import ChartSection from './ChartSection';
 import NetWorthBox from './components/NetWorthBox';
 
 export default () => {
-  const [linkToken, setLinkToken] = useState(
-    'link-sandbox-7dfe906c-f390-48fd-a2a9-7dc7830ad3ed',
-  );
-  const userDetails = useSelector(state => state.userReducer?.userDetails);
+  const [linkToken, setLinkToken] = useState(null);
+  const user = useSelector(state => state.userReducer?.userDetails);
+  const [userDetails, setUserDetails] = useState(null);
+  const [bankList, setBankList] = useState([]);
+  const getUserDetails = async () => {
+    const userDocRef = userCollation.doc(user?._id);
+    const doc = await userDocRef.get();
+    const userData = doc?._data;
+    setUserDetails(userData);
+    setBankList(userData?.bankDetails);
+  };
+  console.log('bank details >>> ', bankList);
+  useEffect(() => {
+    createLinkToken();
+    getUserDetails();
+  }, []);
+
   const [accessToken, setAccessToken] = useState(null);
 
   const createLinkToken = async () => {
-    await fetch(`http://127.0.0.1:5001/silo-40612/us-central1/createPayment`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
+    await fetch(
+      `https://us-central1-silo-40612.cloudfunctions.net/createPayment`,
+      {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({name: user?.name, id: user?._id}),
       },
-      body: JSON.stringify({name: userDetails?.name, id: userDetails?._id}),
-    })
+    )
       .then(response => response.json())
       .then(data => {
+        console.log('data?.link_token  ', data?.link_token);
         setLinkToken(data?.link_token);
       })
       .catch(err => {
-        console.log(err);
+        console.log('errr>>. ', err);
       });
   };
 
-  useEffect(() => {
-    createLinkToken();
-  }, []);
-
-  const getBankDetails = AToken => {
+  const getBankDetails = (AToken, accountData) => {
+    const acDetails = accountData?.account;
+    // console.log('accountData ??? ', accountData);
+    // console.log(' accountData?.accounts >>  ', acDetails);
     var myHeaders = new Headers();
     myHeaders.append('Content-Type', 'application/json');
     var raw = {
-      accessToken: AToken,
+      accessToken: AToken?.accessToken,
     };
 
     var requestOptions = {
@@ -51,11 +67,44 @@ export default () => {
     };
 
     fetch(
-      'http://127.0.0.1:5001/silo-40612/us-central1/accountsDetails',
+      'https://us-central1-silo-40612.cloudfunctions.net/accountsDetails',
       requestOptions,
     )
       .then(response => response.text())
-      .then(result => console.log(result))
+      .then(result => {
+        const responseData = JSON.parse(result);
+        // console.log('accountsDetails response ', responseData.accounts);
+        const bank = {
+          userName: acDetails.name,
+          balance: responseData.accounts[0]?.balances?.available,
+          bankName: accountData.institution?.name,
+        };
+        const ud = {...userDetails};
+        let bd = [...ud?.bankDetails];
+        const bnk = {
+          bankDetails: [ud?.bankDetails !== undefined ? bd.push(bank) : bank],
+        };
+        console.log('bnk >>> ', bd);
+
+        const updateData = {
+          ...ud,
+          ...bnk,
+        };
+        // const update = (ud.bankAccounts = updateData);
+        if (ud?.bankDetails !== undefined) {
+          userCollation.doc(userDetails?._id).update({bankDetails: bd});
+        } else {
+          userCollation.doc(userDetails?._id).set(updateData);
+        }
+
+        console.log('Update bank details >> ', updateData);
+        getUserDetails();
+        // console.log('bank obj>>> ', ud);
+        // userCollation.doc(userDetails?._id).set({
+        //   ...userDetails,
+        //   bankDetails: [ud?.bankDetails, ...bank],
+        // });
+      })
       .catch(error => console.log('error', error));
   };
 
@@ -67,7 +116,7 @@ export default () => {
         <NetWorthBox netWorth="216,201.97" />
         <ChartSection />
         <Divider />
-        <AccountList />
+        <AccountList bankList={bankList} />
       </ScrollView>
       <Divider />
       <View style={styles.btn_section}>
@@ -83,24 +132,21 @@ export default () => {
               noLoadingState: false,
             }}
             onSuccess={async (success: LinkSuccess) => {
-              console.log('toek n<<<< >>>> ', success);
-              const ac = success.metadata.accounts;
-
-              const bankDetails = {
-                id: success.metadata.linkSessionId,
-                // bankName: success.metadata.institution[0]?.name,
-                bankDetails: success.metadata.accounts,
-              };
-
-              bankAccount.doc(userDetails?._id).set(bankDetails),
-                console.log('first', JSON.parse(success.metadata.metadataJson));
-              //   // console.log(
-              //   //   '>> metadataJson >> ',
-              //   //   JSON.stringify(success.metadata.metadataJson, null, 4),
-              //   // ),
+              console.log('LinkSuccess ', success);
+              // const ac = success.metadata.accounts;
+              const accountData = JSON.parse(success.metadata.metadataJson);
+              // bankAccount.doc(userDetails?._id).set(bankDetails),
+              console.log(
+                'metadataJson',
+                JSON.parse(success.metadata.metadataJson),
+              );
+              // console.log(
+              //   '>> metadataJson >> ',
+              //   JSON.stringify(success.metadata.metadataJson, null, 4),
+              // ),
               // );
               await fetch(
-                `http://127.0.0.1:5001/silo-40612/us-central1/ExchangePublic_token`,
+                `https://us-central1-silo-40612.cloudfunctions.net/ExchangePublic_token`,
                 {
                   method: 'POST',
                   headers: {
@@ -111,11 +157,10 @@ export default () => {
               )
                 .then(response => response.text())
                 .then(result => {
-                  console.log('result ? ', result);
                   const res = JSON.parse(result);
                   console.log('acccc >> ', res?.accessToken);
                   setAccessToken(res?.accessToken);
-                  getBankDetails(res?.accessToken);
+                  getBankDetails(res, accountData);
                 })
                 .catch(err => {
                   console.log(err);

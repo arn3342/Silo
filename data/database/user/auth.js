@@ -135,6 +135,7 @@ export const useAuthHook = () => {
             ? 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRCVGv_UuZYSFHHJvsXgIZduF0QC1NCe_f3BXBYUwrPfw&s'
             : authResult.user.photoURL,
         _id: authResult.user.uid,
+        bankDetails: [],
         created_at: new Date(),
       };
 
@@ -183,6 +184,7 @@ export const useAuthHook = () => {
         image: result.user.photoURL,
         _id: result.user.uid,
         created_at: new Date(),
+        bankDetails: [],
       };
       dispatch(setUserDetails(user));
       const check = await isExistUser(result.user.uid);

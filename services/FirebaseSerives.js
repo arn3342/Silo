@@ -1,5 +1,6 @@
 import firestore from '@react-native-firebase/firestore';
 
+
 const userCollation = firestore().collection('userProfile');
 const bankAccount = firestore().collection('bankAccount');
 

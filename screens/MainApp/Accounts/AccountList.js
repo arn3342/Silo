@@ -7,19 +7,20 @@ const renderItem = ({item}) => {
   console.log(item);
   return (
     <AccountCard
-      amount={item.value}
-      percent={item.percent}
-      name={item.name}
-      account={item.account}
+      amount={item?.balance}
+      percent={0}
+      name={item.userName}
+      account={item.bankName}
     />
   );
 };
 
-const AccountList = () => {
+const AccountList = props => {
+  const {bankList} = props;
   return (
     <View style={{marginTop: 0}}>
       <Text style={styles.headerTxt}>Accounts</Text>
-      {Mockdata && <FlatList data={Mockdata} renderItem={renderItem} />}
+      {bankList && <FlatList data={bankList} renderItem={renderItem} />}
     </View>
   );
 };
